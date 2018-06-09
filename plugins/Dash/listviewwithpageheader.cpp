@@ -871,7 +871,7 @@ ListViewWithPageHeader::ListItem *ListViewWithPageHeader::createItem(int modelIn
         return nullptr;
 
     m_asyncRequestedIndex = -1;
-    QObject* object = m_delegateModel->object(modelIndex, asynchronous);
+    QObject* object = m_delegateModel->object(modelIndex, asynchronous ? QQmlIncubator::Asynchronous : QQmlIncubator::AsynchronousIfNested);
     QQuickItem *item = qmlobject_cast<QQuickItem*>(object);
     if (!item) {
         if (object) {
@@ -1141,11 +1141,10 @@ void ListViewWithPageHeader::contentYAnimationRunningChanged(bool running)
     }
 }
 
-/*
-void ListViewWithPageHeader::itemGeometryChanged(QQuickItem *item, const QRectF &newGeometry, const QRectF &oldGeometry)
+void ListViewWithPageHeader::itemGeometryChanged(QQuickItem *item, QQuickGeometryChange change, const QRectF &oldGeometry)
 {
-    const qreal heightDiff = newGeometry.height() - oldGeometry.height();
-    if (heightDiff != 0) {
+    if (change.heightChange()) {
+        const qreal heightDiff = height() - oldGeometry.height();
         if (!m_visibleItems.isEmpty()) {
             ListItem *firstItem = m_visibleItems.first();
             const auto prevFirstItemY = firstItem->y();
@@ -1166,7 +1165,6 @@ void ListViewWithPageHeader::itemGeometryChanged(QQuickItem *item, const QRectF 
         m_contentHeightDirty = true;
     }
 }
-*/
 
 void ListViewWithPageHeader::itemImplicitHeightChanged(QQuickItem *item)
 {
